@@ -28,17 +28,22 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  min-width: 3rem;
+  min-width: 6rem;
   min-height: 2rem;
   border-radius: 0.5rem;
 }
 
 .Droppable {
-  background-color: hsl(0, 0%, 98%);
-  border: 3px dashed hsl(0, 0%, 50%); 
+  position: relative;
+  background-color: hwb(0 98% 2%);
+  border: 3px dashed rgb(51, 51, 51);
 }
 
 .Draggable {
+  position: absolute;
+  cursor: grab;
+  z-index: 1;
+  transition: background 0.3s ease;
   background-color: hsl(0, 0%, 95%);
   border: 3px solid hsl(0, 0%, 90%);
 }
