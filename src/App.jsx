@@ -1,4 +1,4 @@
-import { useRef, useState, forwardRef } from "react";
+import { useEffect, useRef, useState, forwardRef } from "react";
 import { motion, AnimateSharedLayout } from "framer-motion";
 
 import './App.css'
@@ -6,11 +6,15 @@ import './App.css'
 const droppableVariant = {
   dragging: {
     borderColor: "rgb(51, 51, 51)",
-    backgroundColor: "aliceblue",
+    backgroundColor: "#f0f8ff",
+  },
+  hovering: {
+    borderColor: "rgb(93, 100, 177)",
+    backgroundColor: "#c3daf0",
   },
   inactive: {
     borderColor: "rgb(128, 128, 128)",
-    backgroundColor: "inherit",
+    backgroundColor: "#ffffff",
   }
 };
 
@@ -28,14 +32,14 @@ const draggableVariant = {
 };
 
 const Droppable = forwardRef(
-  ({ index, activeIndex, onDragStart, onDragEnd, isDragging }, ref) => {
+  ({ index, activeIndex, hoverIndex, onDragStart, onDragEnd, onDrag, isDragging }, ref) => {
     return (
       <motion.div
         className="Droppable"
         ref={ref}
         id={index}
         variants={droppableVariant}
-        animate={isDragging ? "dragging" : "inactive"}
+        animate={isDragging ? hoverIndex === index ? "hovering" : "dragging" : "inactive"}
       >
         {`Area ${index + 1}`}
         {activeIndex === index && (
@@ -45,6 +49,7 @@ const Droppable = forwardRef(
             animate={isDragging ? "dragging" : "inactive"}
             onDragStart={onDragStart}
             onDragEnd={onDragEnd}
+            onDrag={onDrag}
             layoutId="drag"
             drag
             // dragConstraints={constraintRef}
@@ -65,18 +70,20 @@ const Droppable = forwardRef(
 
 function App() {
   const appRef = useRef(null);
-  const ref0 = useRef(null);
-  const ref1 = useRef(null);
-  const ref2 = useRef(null);
-  const ref3 = useRef(null);
 
-  const droppables = [ref0, ref1, ref2, ref3];
+  const droppables = [
+    useRef(null),
+    useRef(null),
+    useRef(null),
+    useRef(null),
+  ]
 
-  const [activeIndex, setActiveIndex] = useState(3);
+  const [activeIndex, setActiveIndex] = useState(droppables.length - 1);
+  const [hoverIndex, setHoverIndex] = useState();
   const [isDragging, setIsDragging] = useState(false);
 
   const getActiveCellIndex = ({ point }) => {
-    const cellIndex = droppables.findIndex((cell) => {
+    return droppables.findIndex((cell) => {
       const {
         offsetLeft,
         offsetTop,
@@ -97,11 +104,6 @@ function App() {
         point.y <= bottomEdge
       );
     });
-
-    // cellIndex should be -1 if not dropped into a cell. If that's the case, just return the current activeIndex
-    if (cellIndex < 0) return activeIndex;
-
-    return cellIndex;
   };
 
   const dragStart = () => {
@@ -110,8 +112,16 @@ function App() {
 
   const dragEnd = (_, info) => {
     setIsDragging(false);
-    setActiveIndex(getActiveCellIndex(info));
+    setActiveIndex(prev => {
+      const index = getActiveCellIndex(info);
+
+      return index === -1 ? prev : index;
+    });
   };
+
+  const onDrag = (_, info) => {
+    setHoverIndex(getActiveCellIndex(info));
+  }
 
   return (
     <div className="App" ref={appRef}>
@@ -122,8 +132,10 @@ function App() {
               index={i}
               key={`droppable-${i}`}
               activeIndex={activeIndex}
+              hoverIndex={hoverIndex}
               onDragStart={dragStart}
               onDragEnd={dragEnd}
+              onDrag={onDrag}
               isDragging={isDragging}
               ref={droppable}
             />

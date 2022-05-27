@@ -47,3 +47,7 @@
   background-color: hsl(0, 0%, 95%);
   border: 3px solid hsl(0, 0%, 90%);
 }
+.Droppable:last-child {
+  position: absolute;
+  bottom: 3rem;
+}
