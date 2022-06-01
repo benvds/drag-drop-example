@@ -68,6 +68,11 @@ const Droppable = forwardRef(
   }
 );
 
+/**
+  * - how do i want my state to look?
+  * - how do the droppables come in?
+  * - how do the draggables come in?
+  */
 function App() {
   const appRef = useRef(null);
 
@@ -76,7 +81,13 @@ function App() {
     useRef(null),
     useRef(null),
     useRef(null),
-  ]
+    useRef(null),
+  ];
+
+  const cards = [
+    useRef(null),
+    useRef(null),
+  ];
 
   const [activeIndex, setActiveIndex] = useState(droppables.length - 1);
   const [hoverIndex, setHoverIndex] = useState();
